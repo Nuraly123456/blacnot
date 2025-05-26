@@ -1,0 +1,51 @@
+/* Профиль стильдері */
+.profile-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-image-container:hover .profile-image-overlay {
+    opacity: 1;
+}
+
+.profile-image-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: .3s ease;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+/* Жазбалар тізімі */
+.entry-list-item {
+    transition: transform .2s;
+}
+
+.entry-list-item:hover {
+    transform: translateX(5px);
+    background-color: #f8f9fa;
+}
+
+/* Форма элементтері */
+.profile-form label {
+    font-weight: 500;
+}
+
+/* Жылдам әрекеттер түймелері */
+.quick-action-btn {
+    transition: all 0.3s;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
