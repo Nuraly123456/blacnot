@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!--Author-Nuraly Kuttibay-->
+<div class="container mt-4">
+    <h2 class="mb-4">📅 Күнтізбе</h2>
+
+    <!-- FullCalendar айлық күнтізбесі -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <!-- Жаңа оқиға қосу формасы -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">Жаңа оқиға қосу</div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form.title.label_tag }} {{ form.title }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.date.label_tag }} {{ form.date }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.time.label_tag }} {{ form.time }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.notification_time.label_tag }} {{ form.notification_time }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.priority.label_tag }} {{ form.priority }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.color.label_tag }} {{ form.color }}
+                    </div>
+                    <div class="col-12">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Қосу</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Оқиғалар тізімі -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">Алдағы оқиғалар</div>
+        <ul class="list-group list-group-flush">
+            {% for event in events %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span style="color: {{ event.color }};">●</span>
+                        <strong>{{ event.title }}</strong><br>
+                        <small>{{ event.date }} {% if event.time %} {{ event.time }} {% endif %}</small><br>
+                        {% if event.is_completed %}
+                            <span class="badge bg-success">Аяқталған</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                      <a href="{% url 'event_update' event.id %}">Оқиғаны жаңарту</a>
+                        <a href="{% url 'event_update' event.id %}" class="btn btn-sm btn-outline-primary">Өңдеу</a>
+                        <a href="{% url 'event_delete' event.id %}" class="btn btn-sm btn-outline-danger">Жою</a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item">Қосылған оқиғалар жоқ.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- FullCalendar Scripts -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'kk',
+        firstDay: 1,
+        height: 500,
+        events: [
+            {% for event in events %}
+            {
+                title: "{{ event.title|escapejs }}",
+                start: "{{ event.date }}T{{ event.time|default:'00:00:00' }}",
+                color: "{{ event.color }}"
+            },
+            {% endfor %}
+        ]
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}

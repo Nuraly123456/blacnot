@@ -1,0 +1,14 @@
+msgid "Welcome"
+msgstr "Қош келдіңіз"
+
+msgid "Create new post"
+msgstr "Жаңа жазба қосу"
+
+msgid "Save"
+msgstr "Сақтау"
+
+msgid "Delete"
+msgstr "Жою"
+
+msgid "Edit profile"
+msgstr "Профильді өзгерту"

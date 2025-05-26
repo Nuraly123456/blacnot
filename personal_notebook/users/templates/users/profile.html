@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row">
+        <!-- Сол жақ баған - Профиль ақпараты -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img
+                        src="{{ user.profile.profile_image.url }}"
+                        class="rounded-circle mb-3"
+                        width="150"
+                        height="150"
+                        alt="Профиль суреті"
+                    >
+                    <h4>{{ user.username }}</h4>
+                    {% if user.profile.bio %}
+                        <p class="text-muted">{{ user.profile.bio }}</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="mx-2">
+                            <strong>{{ user.entry_set.count }}</strong>
+                            <div>Жазбалар</div>
+                        </div>
+                        <div class="mx-2">
+                            <strong>0</strong>
+                            <div>Өзгертулер</div>
+                        </div>
+                    </div>
+
+                    {% if user.profile.location %}
+                        <p><i class="bi bi-geo-alt"></i> {{ user.profile.location }}</p>
+                    {% endif %}
+                    {% if user.profile.website %}
+                        <p><i class="bi bi-link-45deg"></i> <a href="{{ user.profile.website }}" target="_blank">{{ user.profile.website }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>Жылдам әрекеттер</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                           <a href="{% url 'users:change_password' %}" class="btn btn-outline-secondary w-100">
+    Құпия сөзді өзгерту
+</a>
+
+                        </li>
+                        <li class="mb-2">
+                            <button class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                Аккаунтты жою
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Оң жақ баған - Профильді өзгерту формасы -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Профильді өзгерту</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ u_form|crispy }}
+                        {{ p_form|crispy }}
+                        <button type="submit" class="btn btn-primary mt-3">Сақтау</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Соңғы жазбалар -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Соңғы жазбаларым</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_entries %}
+                        <div class="list-group">
+                            {% for entry in user_entries %}
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ entry.title }}</h6>
+                                    <small>{{ entry.created_at|timesince }} бұрын</small>
+                                </div>
+                                <p class="mb-1">{{ entry.content|truncatewords:10 }}</p>
+                                {% if entry.media_type != 'text' %}
+                                    <small><i class="bi bi-{{ entry.media_type }}"></i> {{ entry.get_media_type_display }}</small>
+                                {% endif %}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'users:profile_entries' %}" class="btn btn-outline-primary mt-3">
+                            Барлық жазбаларды көрсету
+                        </a>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Сізде әлі жазбалар жоқ. <a href="{% url 'home' %}">Бірінші жазбаңызды қосыңыз</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Аккаунтты жою модальды терезесі -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Аккаунтты жою</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Жабу"></button>
+            </div>
+            <div class="modal-body">
+                <p>Сіз шынымен аккаунтыңызды жойғыңыз келе ме? Бұл әрекетті кері қайтару мүмкін емес!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Жабу</button>
+                <form method="post" action="{% url 'users:delete_account' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Жою</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

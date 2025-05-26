@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <!--Author-Nuraly Kuttibay-->
+<div class="mb-5">  <!-- Bottom nav үшін орын қалдыру -->
+    <h2 class="mb-4">Қоңыраулы жазбалар</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            {% for entry in pinned_entries %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">{{ entry.title }}</h5>
+                        <a href="{% url 'toggle_pin' entry.id %}" class="btn btn-sm btn-outline-secondary">
+                            {% if entry.is_pinned %}
+                                <i class="bi bi-pin-angle-fill"></i>
+                            {% else %}
+                                <i class="bi bi-pin-angle"></i>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <p class="card-text">{{ entry.content }}</p>
+                    {% if entry.media_file %}
+                        {% if entry.media_type == 'photo' %}
+                            <img src="{{ entry.media_file.url }}" class="img-fluid rounded" alt="{{ entry.title }}">
+                        {% elif entry.media_type == 'video' %}
+                            <video controls class="w-100">
+                                <source src="{{ entry.media_file.url }}" type="video/mp4">
+                            </video>
+                        {% elif entry.media_type == 'audio' %}
+                            <audio controls>
+                                <source src="{{ entry.media_file.url }}" type="audio/mpeg">
+                            </audio>
+                        {% endif %}
+                    {% endif %}
+                    <p class="text-muted mt-2">
+                        <small>{{ entry.created_at|date:"d M Y H:i" }}</small>
+                    </p>
+                </div>
+            </div>
+            {% empty %}
+                <div class="alert alert-info">Әзірше қоңыраулы жазбалар жоқ</div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Жаңа жазба қосу
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary mt-3">Сақтау</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
